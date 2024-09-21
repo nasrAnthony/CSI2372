@@ -1,0 +1,9 @@
+Lab 1 Exercise 2:
+Q1:
+Main will begin by initializing 4 variables. 
+Then it will then launch a while loop with a condition of 1 
+that will continiously run. Within the loop, the variable choice
+is given the value returned from the menu() function. 
+Then a switch case statement will help prompt the user for the measurements (raduis, height etc...)
+before calling the appropriate function for calculating the surface or volume. 
+Finally,the result is printed out to the user. If '3' is given, program stops.   
