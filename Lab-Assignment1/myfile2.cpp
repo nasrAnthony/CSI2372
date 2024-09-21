@@ -1,19 +1,18 @@
 #include <iostream>
+#include "./myfile2.h"
+
 using namespace std;
 
-const double pi = 3.14159265;
-
-int surface(double radius){
-    //based on A= pi*r^2
-    float area = pi * (radius * radius);
+int surface(double const& ray){
+    //based on A= Pi*r^2
+    float area = Pi * (ray * ray);
     cout << "The surface is: " << area << endl;
     return 1;
 }
 
-
-int volume(double radius, double height){
-    //based on V = h*pi*r^2
-    float vol = height * (pi * (radius * radius));
+int volume(double const& ray, double const& height){
+    //based on V = h*Pi*r^2
+    float vol = height * (Pi * (ray * ray));
     cout << "The volume is: " << vol << endl;
     return 1;
 }
@@ -30,6 +29,7 @@ char menu(void) {
     return (choice);
     cout << endl;
 }
+
 /*main Function*/
 int main() {
     char choice;
