@@ -1,7 +1,7 @@
 #include <iostream>
 using namespace std;
 
-const long pi = 3.14159265;
+const double pi = 3.14159265;
 
 int surface(double radius){
     //based on A= pi*r^2
