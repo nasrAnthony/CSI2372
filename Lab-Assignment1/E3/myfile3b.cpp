@@ -32,6 +32,17 @@ void exchange(int& a, int& b) {
 void sort(vector<int>& T) {
 
 	//YOUR CODE
+	for (int i = T.size(); i >= 0 ; i--){
+		vector <int> tempSlice(T.begin(), T.begin() + i); //create a slice of original vector
+		if (tempSlice.size() - 1 == 0){
+			break;
+		}
+		int indexMax = searchIndex(tempSlice, tempSlice.size()-1); //get index of max value in slice
+		if (indexMax != -1) {
+			exchange(T[indexMax], T[tempSlice.size() - 1]);
+		}
+		else break;
+	}
 }
 
 /* arrayEntry function to enter values ​​from your table
