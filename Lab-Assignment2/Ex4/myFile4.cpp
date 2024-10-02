@@ -14,7 +14,7 @@ main()
 		{
 		chain[i]=new char[size_ch];		// memory allocation
 		cin.getline(chain[i],size_ch,'\t');	//seizure of the string
-		cin.ignor(INT_MAX,'\n');		// ignore line return
+		cin.ignore(INT_MAX,'\n');		// ignore line return
 		}
 
 	display(chain,nb_ch);					
@@ -25,7 +25,7 @@ main()
 	
 		switch(choice)
 			{
-			case '1':	diplay(chain,nb_ch);
+			case '1':	display(chain,nb_ch);
 				break;
 			case '2':	replace(chain,nb_ch,size_ch);	
 				break;
@@ -67,6 +67,10 @@ char menu(void)
 void display(char* tab[], int const& nbre)
 {
 	//YOUR CODE 
+	cout << "\n" << endl; //insert line
+	for(int i = 0; i < nbre; i++){
+		cout << "The string " << i << " is : " << *(tab + i) << endl;
+	}
 }
 
 
@@ -89,6 +93,9 @@ void replace(char* tab[], int const& nbre, int const& size)
 
 
 	//YOUR CODE 
+	cout << endl << "Enter the new string: ";
+	cin.ignore(INT_MAX,'\n');
+	cin.getline(tab[numero],size,'\t');
 }
 
 /********************************************************************************/
@@ -97,5 +104,14 @@ void replace(char* tab[], int const& nbre, int const& size)
 void sort(char* tab[], int const& nbre)
 {
 	// YOUR CODE 
+	for(int i = 0; i < nbre; i++){
+		char * current_string = tab[i];
+		int j = i - 1;
+		while( j>=0 && strcmp(tab[j], current_string) > 0){
+			tab[j + 1] = tab[j];
+			j--;
+		}
+		tab[j + 1] = current_string;
+	}
 }
 
