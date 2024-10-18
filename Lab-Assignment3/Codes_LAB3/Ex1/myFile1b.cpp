@@ -17,7 +17,19 @@ typedef Card Hand[5];
 /* testPair() function*/
 bool testPair(const Hand& h)
 {
-	//YOUR CODE  
+	//YOUR CODE 
+	bool pairNotFoundFlag = true;
+	int i = 0;
+	while(pairNotFoundFlag){
+		for (int j= 0; j < 5; j++){
+			if(i != j && (h[i].face == h[j].face)){
+				pairNotFoundFlag = false;
+				break;
+			}
+		}
+		i++;
+	}
+	return !pairNotFoundFlag;
 }
 
 
