@@ -2,12 +2,11 @@
 #include <vector>
 #include <exception>
 #include "Card.h"
-
+#include "Chain_Base.h"
 
 using namespace std;
 
-
-template <class T> class Chain{
+template <class T> class Chain : public Chain_Base{
     vector<T*> cardChain;
     public:
         Chain(istream&); //constructor to build chain from file when game is resumed
@@ -76,6 +75,9 @@ template <class T> Chain<T>::Chain(istream&){
 
 //+= operator overload
 template <class T> Chain<T>& Chain<T>:: operator+=(Card* incomingCard){
+    if(!dynamic_cast<T*>(incomingCard)){ //will ne nullptr if they dont match. 
+        throw std::runtime_error("IllegalType: Card type does not match chain type.");
+    }
     cardChain.push_back(incomingCard);
     return *this;
 };
