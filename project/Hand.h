@@ -8,11 +8,13 @@ using namespace std;
 class Hand {
     queue<Card*> cardsInHand;
     public:
+        Hand(){}; //default constructor
         Hand(istream&);
         Hand& operator+=(Card*);
         Card* play();
         Card* top() const;
         Card* operator[] (int);
+        int getSize() const { return cardsInHand.size();}; //helper to access size of the cardsInHand member
         friend ostream& operator << (ostream&, Hand&);
 };
 

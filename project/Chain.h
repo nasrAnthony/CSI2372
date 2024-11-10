@@ -9,13 +9,19 @@ using namespace std;
 template <class T> class Chain : public Chain_Base{
     vector<T*> cardChain;
     public:
+        Chain(){}; //default no args constructor
         Chain(istream&); //constructor to build chain from file when game is resumed
         Chain(Card * firstCard) { cardChain.push_back(firstCard);} //default constructor
         Chain<T>& operator+=(Card*); //operator overload for (adding a card)
         int sell();
+        vector<T*> getCardChain() const { return cardChain;} //getter for priv member
+        int getSize() const; //helper to access size of private member cardChain
         friend ostream& operator << (ostream& out, Chain<Card>& c); //friend << operator
 };  
 
+template <class T> int Chain<T>::getSize()const{
+    return cardChain.size();
+};
 template <class T> Chain<T>::Chain(istream&){
     while(!in.eof()){
         string input;
