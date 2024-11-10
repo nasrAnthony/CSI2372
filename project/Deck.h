@@ -6,6 +6,7 @@ using namespace std;
 
 class Deck : public vector<Card*>{
     public:
+        Deck(){}; //default
         Deck(istream&); //constructor to build deck from file. 
         Card* draw(); //Draw top Card.
         friend ostream& operator <<(ostream&, const Deck&); //friend function

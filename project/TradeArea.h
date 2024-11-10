@@ -8,6 +8,7 @@ using namespace std;
 class TradeArea{
     list<Card*> cardList = {}; //init empty
     public:
+        TradeArea(){};
         TradeArea(istream&); //custom constructor from file
         TradeArea& operator+=(Card*);
         bool legal(Card*);

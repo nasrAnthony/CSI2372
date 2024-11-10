@@ -6,6 +6,7 @@ using namespace std;
 
 class DiscardPile : public vector<Card*>{
     public:
+        DiscardPile(){}; //default
         DiscardPile(istream&);
         DiscardPile& operator +=(Card*);
         Card* pickUp(); //show and remove

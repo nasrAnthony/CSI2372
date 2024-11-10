@@ -11,6 +11,7 @@ class Player{
     Chain<Card> chains[3]; //max 3 chains per player
     bool playerMaxChainFlag;
     public:
+        Player(): playerName(""), playerNumCoins(0), playerMaxChainFlag(false){}; //default constructor
         Player(string& name): playerName(name), playerNumCoins(0), playerMaxChainFlag(false){};
         Player(istream&, Chain<Card>&, Chain<Card>&, Chain<Card>&, Hand&);
         string getName() const;
