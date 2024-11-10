@@ -11,7 +11,7 @@ class DiscardPile : public vector<Card*>{
         Card* pickUp(); //show and remove
         Card* top();//show only
         void print(ostream&);
-        friend ostream& operator<<(ostream&, DiscardPile&);
+        friend ostream& operator<<(ostream&, const DiscardPile&);
 };
 
 DiscardPile::DiscardPile(istream& in){
@@ -23,8 +23,8 @@ DiscardPile::DiscardPile(istream& in){
             push_back(tempCard);
         }
         if(temp == "Chili"){
-                Card* tempCard = new Chili();
-                push_back(tempCard);
+            Card* tempCard = new Chili();
+            push_back(tempCard);
         }
         if(temp == "Stink"){
             Card* tempCard = new Stink();

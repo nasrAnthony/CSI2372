@@ -8,7 +8,7 @@ class Deck : public vector<Card*>{
     public:
         Deck(istream&); //constructor to build deck from file. 
         Card* draw(); //Draw top Card.
-        friend ostream& operator <<(ostream&, Deck&); //friend function
+        friend ostream& operator <<(ostream&, const Deck&); //friend function
 };
 
 ostream& operator<<(ostream& out, Deck& deck){
@@ -28,8 +28,8 @@ Deck:: Deck(istream& in){
             push_back(tempCard);
         }
         if(temp == "Chili"){
-                Card* tempCard = new Chili();
-                push_back(tempCard);
+            Card* tempCard = new Chili();
+            push_back(tempCard);
         }
         if(temp == "Stink"){
             Card* tempCard = new Stink();
