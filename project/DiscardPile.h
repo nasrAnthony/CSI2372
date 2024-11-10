@@ -89,4 +89,3 @@ ostream& operator<<(ostream& out, DiscardPile& discPile){
     Card * topCard = discPile.back();
     out << topCard->getName();
 }
-
