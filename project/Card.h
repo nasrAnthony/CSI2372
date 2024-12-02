@@ -1,3 +1,6 @@
+#ifndef CARD_H
+#define CARD_H
+
 #include <string>
 #include <iostream>
 
@@ -144,3 +147,7 @@ class garden : public Card {
             out << name.front();
         }
 };
+
+
+
+#endif // CARD_H

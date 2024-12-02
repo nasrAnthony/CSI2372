@@ -1,92 +1,22 @@
+#ifndef DISCARDPILE_H
+#define DISCARDPILE_H
+
 #include <iostream>
 #include <vector>
+#include "CardFactory.h"
 #include "Card.h"
 
-using namespace std;
+class DiscardPile {
+    std::vector<Card*> pile; // Use composition instead of inheritance
 
-class DiscardPile : public vector<Card*>{
-    public:
-        DiscardPile(){}; //default
-        DiscardPile(istream&);
-        DiscardPile& operator +=(Card*);
-        Card* pickUp(); //show and remove
-        Card* top();//show only
-        void print(ostream&);
-        friend ostream& operator<<(ostream&, const DiscardPile&);
+public:
+    DiscardPile() = default; // Default constructor
+    DiscardPile(std::istream& in, const CardFactory* factory);
+    DiscardPile& operator+=(Card* c); // Add a card to the pile
+    Card* pickUp();                   // Show and remove the top card
+    Card* top() const;                // Show only the top card
+    void print(std::ostream& out) const;
+    friend std::ostream& operator<<(std::ostream& out, const DiscardPile& discPile);
 };
 
-DiscardPile::DiscardPile(istream& in){
-    while(!in.eof()){
-        string temp;
-        in >> temp;
-        if(temp == "Blue"){
-            Card* tempCard = new Blue();
-            push_back(tempCard);
-        }
-        if(temp == "Chili"){
-            Card* tempCard = new Chili();
-            push_back(tempCard);
-        }
-        if(temp == "Stink"){
-            Card* tempCard = new Stink();
-            push_back(tempCard);
-        }
-        if(temp == "Green"){
-            Card* tempCard = new Green();
-            push_back(tempCard);
-        }
-        if(temp == "soy"){
-            Card* tempCard = new soy();
-            push_back(tempCard);
-        }
-        if(temp == "Red"){
-            Card* tempCard = new Red();
-            push_back(tempCard);
-        }
-        if(temp == "black"){
-            Card* tempCard = new black();
-            push_back(tempCard);
-        }
-        if(temp == "garden"){
-            Card* tempCard = new garden();
-            push_back(tempCard);
-        }
-    }
-};
-
-DiscardPile& DiscardPile::operator +=(Card *c){
-    this->push_back(c);
-    return *this;
-};
-
-Card* DiscardPile:: pickUp(){   
-    if(this->size() == 0){
-        return NULL;
-    }
-    else{
-        Card * topCard = this->back();
-        this->pop_back();
-        return topCard;
-    }
-};
-
-Card* DiscardPile::top(){
-    if(this->size() == 0){
-        return NULL;
-    }
-    else{
-        return this->back();
-    }
-}
-
-void DiscardPile::print(ostream& out){
-    for(Card* c : *this){
-        c->print(out);
-    }
-}
-
-ostream& operator<<(ostream& out, DiscardPile& discPile){
-    out << "DiscardPile= ";
-    Card * topCard = discPile.back();
-    out << topCard->getName();
-}
+#endif // DISCARDPILE_H
