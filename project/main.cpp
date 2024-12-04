@@ -24,6 +24,7 @@ void addCardToChain(Player& playerInstance, Table* tb, Card* card){
     bool success = false;
     for (auto chain: playerInstance.getChains()){
         if(chain!=nullptr && ((*chain).getChainType() == (*card).getName())){
+            
             (*chain).addCard(card);
             success = true;
             cout << "Successfully added " << (*card).getName() << " to an existing chain.\n";
@@ -33,7 +34,9 @@ void addCardToChain(Player& playerInstance, Table* tb, Card* card){
     if(success == false){
         //find empty chain slot to start new chain with new card
         bool emptyChainSlotFound = false;
+
         for(size_t i=0; i<playerInstance.getChains().size();++i){
+            cout<<"Hrey";
             if(playerInstance.getChains()[i] == nullptr){
                 //free slot found, lets create a new chain. 
                 if (card->getName() == "Blue") {
@@ -125,8 +128,6 @@ void saveGameToFile(Table& table){
 }
 
 
-
-
 int main(){
     string p1Name;
     string p2Name;
@@ -145,7 +146,7 @@ int main(){
             fileInStream.close();
             cout << "Data read from file\n";
         }else{
-            cout << "Enter the name fo the 1st player: ";
+            cout << "Enter the name of the 1st player: ";
             cin >> p1Name;
             cout << "Enter the name of the 2nd player: ";
             cin >> p2Name;
@@ -153,7 +154,7 @@ int main(){
         }
 
     }else{
-        cout << "Enter the name fo the 1st player: ";
+        cout << "Enter the name of the 1st player: ";
         cin >> p1Name;
         cout << "Enter the name of the 2nd player: ";
         cin >> p2Name;
@@ -173,13 +174,31 @@ int main(){
                 delete tbp;//delete table and break loop
                 return 0;
             }
-            
 
             int numCardsTA = tbp->tradeArea.numCards();
+
+            //THIRD CHAIN CODE
+            if(playingPlayer.getMaxNumChains()==2){
+                char thirdChainYN;
+                cout<< endl << "Would you like to buy a third chain? (y/n): ";
+                cin >>thirdChainYN;
+                if(thirdChainYN == 'y' || thirdChainYN == 'Y') {
+                    try {
+                        playingPlayer.buyThirdChain();
+                        // playingPlayer.addChain(  );
+                        cout<< "You bought a third chain!" << endl;
+                    }
+                    catch (const std::runtime_error& e) {
+                            std::cerr << "Error: " << e.what() << endl << endl;
+                    }
+                }
+            }
+
             //go through cards on trade floor 
             if(numCardsTA > 0){
                 cout<< "Cards were left in the trade area from " << stallPlayer.getName() <<"\n"<< endl;
                 cout<< "Current " << tbp->tradeArea << endl;
+
                 auto taCards = tbp->tradeArea.getCards();
                 for (auto start = taCards.begin(); start != taCards.end();){
                     Card* card = *start;
@@ -193,7 +212,7 @@ int main(){
                     else{
                         tbp->discardPile += card; //send card to the graveyard lol
                         start = taCards.erase(start); //remove from the trade floor
-                        cout << "You have discarded " << (*card).getName() << ".\n";
+                        cout << "You have discarded " << (*card).getName() << endl << endl;
                     }
                 }
                 tbp->tradeArea = TradeArea(); //reset

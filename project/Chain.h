@@ -72,6 +72,9 @@ int Chain<T>::sell() {
     int coins = 0;
 
     for (int i = 3; i >= 0; --i) {
+        if (tempCard.coinTable[i]==0){
+            continue;
+        }
         if (size >= tempCard.coinTable[i]) {
             coins = i + 1; 
             break;
