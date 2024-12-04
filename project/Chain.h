@@ -26,6 +26,10 @@ public:
         return *this;
     }
 
+    void addCard(Card* Card){
+        (*this).operator+=(Card);
+    }
+
     int sell();
     vector<T*> getCardChain() const { return cardChain; } // Getter for private member
     int getSize() const;                                  // Helper to access size of private member cardChain
@@ -61,15 +65,15 @@ Chain<T>::Chain(istream& in, const CardFactory* factory) {
 
 template <class T>
 int Chain<T>::sell() {
-    if (cardChain.size() == 0) return 0;
-    int numCards = cardChain.size();
+    int size = cardChain.size();
+    if (size == 0) return 0;
+
     T tempCard;
     int coins = 0;
-    for (int c = 4; c >= 1; --c) {
-        int cardsNeeded = tempCard.getCardsPerCoin(c);
-        if (cardsNeeded == 0) continue;
-        if (numCards >= cardsNeeded) {
-            coins = c;
+
+    for (int i = 3; i >= 0; --i) {
+        if (size >= tempCard.coinTable[i]) {
+            coins = i + 1; 
             break;
         }
     }

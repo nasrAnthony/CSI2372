@@ -6,6 +6,7 @@ Player::Player(istream& in, const CardFactory* factory) {
     int numChainsFromFile;
     in >> numChainsFromFile;
     playerMaxChainFlag = (numChainsFromFile == 3);
+    chains.resize(numChainsFromFile, nullptr);
     for (int i = 0; i < numChainsFromFile; i++) {
         std::string chainType;
         in >> chainType;
@@ -98,7 +99,7 @@ void Player::buyThirdChain() {
 
 void Player::printHand(ostream& out, bool verbose) {
     if (playerHand.getSize() == 0) {
-        out << "Hand is empty";
+        out << "Hand is empty. ";
     } else {
         if (!verbose) {
             playerHand.top()->print(out);
@@ -117,11 +118,15 @@ std::ostream& operator<<(std::ostream& out, Player& p) {
     // Display player chains
     for (size_t i = 0; i < p.getChains().size(); i++) {
         out << "Chain " << i + 1 << ": ";
-        if (p.getChains()[i]->getSize() == 0) {
-            out << "Empty" << std::endl;
-        } else {
-            p.getChains()[i]->print(out);
-            out << std::endl;
+        if(p.getChains()[i] == nullptr){
+            out << "Empty"<<endl;
+        }else{
+            if (p.getChains()[i]->getSize() == 0) {
+                out << "Empty" << endl;
+            } else {
+                p.getChains()[i]->print(out);
+                out << endl;
+            }
         }
     }
 

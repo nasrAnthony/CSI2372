@@ -3,6 +3,15 @@
 Table::Table(istream& in, const CardFactory* factory)
     : player1(in, factory), player2(in, factory), deck(in, factory), discardPile(in, factory), tradeArea(in, factory) {}
 
+
+Table::Table(string& p1name, string& p2name, const CardFactory* cf):
+    player1(p1name), player2(p2name), deck(cf->getDeck()){
+    for (int i = 0; i < 5; ++i) {//give 5 cards to each player 
+        player1.getHand() += deck.draw();
+        player2.getHand() += deck.draw();
+    }
+    }
+
 bool Table::win(string& winningPlayerName) {
     // Winning condition: deck size is 0 and one player has more coins than the other
     if (deck.size() != 0) {
@@ -30,17 +39,24 @@ void Table::printHand(bool verbose) { // Top card of both players, or all cards 
 }
 
 ostream& operator<<(ostream& out, Table& tab) {
-    out << "Deck:\n" << tab.getDeck() << endl;
-    out << "DiscardPile:\n";
-    tab.getDiscardPile()->print(out);
-    out << endl;
-    out << "TradeArea:\n" << *tab.getTradeArea() << endl;
-    out << "Player 1:\n" << tab.getPlayer1() << endl;
-    out << "Player 2:\n" << tab.getPlayer2() << endl;
+out << "----- Table -----\n";
+    out << tab.player1 << std::endl;
+    out << tab.player2 << std::endl;
+    out << "Discard Pile Top Card: ";
+    if (tab.discardPile.top()) {
+        tab.discardPile.top()->print(out);
+    }
+    else {
+        out << "Pile is empty.";
+    }
+    out << std::endl;
+
+    out << tab.tradeArea << std::endl;
+    out << "------------------------\n";
     return out;
 }
 
-void Table::saveAllDataToFile(ostream& file) {
+void Table::saveAllDataToFile(ostream& file){
     // Save Player 1
     file << player1.getName() << endl;
     file << player1.getNumCoins() << endl;

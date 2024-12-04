@@ -15,6 +15,7 @@ public:
     TradeArea() = default;
     TradeArea(istream& in, const CardFactory* factory);
     TradeArea& operator+=(Card* c);
+    list<Card*>getCards() {return cardList;}
     bool legal(Card* c) const;
     Card* trade(string name);
     int numCards() const { return cardList.size(); }

@@ -18,6 +18,7 @@ public:
     Card* play();
     Card* top() const;
     Card* operator[](int index);
+    void print(ostream& out);
     int getSize() const { return cardsInHand.size(); }
     friend ostream& operator<<(ostream& out, const Hand& h);
 };

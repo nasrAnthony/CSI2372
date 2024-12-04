@@ -37,6 +37,14 @@ Card* Hand::operator[](int index) {
     return nullptr; // Index out of bounds
 }
 
+
+void Hand::print(ostream& out){
+    out << "Your Hand: ";
+    for (auto* card : cardsInHand){
+        out << card->getName() << " ";
+    }
+    out << "\n";
+}
 // Output the hand to an ostream
 ostream& operator<<(ostream& out, const Hand& h) {
     out << "Hand: ";

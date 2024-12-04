@@ -20,8 +20,9 @@ class Card{
 
 class Blue : public Card {
     const string name;
-    int coinTable [4];
     public:
+    
+        int coinTable [4];
         Blue() : name("Blue"), coinTable{4,6,8,10}{}
 
         int getCardsPerCoin(int coins){
@@ -38,8 +39,8 @@ class Blue : public Card {
 
 class Chili : public Card {
     const string name;
-    int coinTable [4];
     public:
+        int coinTable [4];
         Chili(): name("Chili"), coinTable{3,6,8,9}{}
         int getCardsPerCoin(int coins){
             return *(coinTable + (coins - 1));
@@ -54,8 +55,8 @@ class Chili : public Card {
 
 class Stink : public Card {
     const string name;
-    int coinTable [4];
     public:
+        int coinTable [4];
         Stink(): name("Stink"), coinTable{3,5,7,8}{}
         int getCardsPerCoin(int coins){
             return 0;
@@ -70,8 +71,8 @@ class Stink : public Card {
 
 class Green : public Card {
     const string name;
-    int coinTable[4];
     public:
+        int coinTable[4];
         Green(): name("Green"), coinTable{3,5,6,7}{}
         int getCardsPerCoin(int coins){
             return *(coinTable + (coins - 1));
@@ -86,8 +87,8 @@ class Green : public Card {
 
 class soy : public Card {
     const string name;
-    int coinTable[4];
     public:
+        int coinTable[4];
         soy() : name("soy"), coinTable{2,4,6,7}{}
         int getCardsPerCoin(int coins){
             return *(coinTable + (coins - 1));
@@ -102,8 +103,8 @@ class soy : public Card {
 
 class black : public Card {
     const string name;
-    int coinTable[4];
     public:
+        int coinTable[4];
         black(): name("black"), coinTable{2,4,5,6}{}
         int getCardsPerCoin(int coins){
             return *(coinTable + (coins - 1));
@@ -118,8 +119,9 @@ class black : public Card {
 
 class Red : public Card {
     const string name;
-    int coinTable[4];
     public:
+            
+        int coinTable[4];
         Red(): name("Red"), coinTable{2,3,4,5}{}
         int getCardsPerCoin(int coins){
             return *(coinTable + (coins - 1));
@@ -134,8 +136,8 @@ class Red : public Card {
 
 class garden : public Card {
     const string name;
-    int coinTable[4];
     public:
+        int coinTable[4];
         garden(): name("garden"), coinTable {0,2,3,0}{}
         int getCardsPerCoin(int coins){
             return *(coinTable + (coins - 1)); //if 0 it means we cannot have that amount of coins with this card. 

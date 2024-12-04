@@ -35,8 +35,12 @@ Card* TradeArea::trade(string name) {
 
 ostream& operator<<(ostream& out, const TradeArea& ta) {
     out << "TradeArea: ";
+    if(ta.cardList.size() == 0){
+        out << "Empty.";
+        return out;
+    }
     for (const auto& card : ta.cardList) {
-        card->print(out);
+        out << card->getName();
         out << " ";
     }
     return out;

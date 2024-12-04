@@ -20,8 +20,10 @@ public:
     TradeArea tradeArea;
     Table() = default;
     Table(istream& in, const CardFactory* factory);
+    Table(string&, string&, const CardFactory* factory);
     bool win(string& winningPlayerName);
     void printHand(bool verbose);
+    
     friend ostream& operator<<(ostream& out, Table& tab);
     // Getters
     Player& getPlayer1() { return player1; }

@@ -10,6 +10,7 @@ public:
     virtual int getSize() const = 0;
     virtual void print(std::ostream& out) const = 0;
     virtual string getChainType() = 0;
+    virtual void addCard(Card* card) = 0;
 };
 
 #endif // CHAIN_BASE_H

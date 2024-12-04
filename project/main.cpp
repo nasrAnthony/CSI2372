@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <limits>
 #include "CardFactory.h"
 #include "CardFactory.cpp"
 #include "Card.h"
@@ -12,532 +13,299 @@
 #include "TradeArea.cpp"
 #include "Hand.h"
 #include "Hand.cpp"
-#include "Chain_Base.h"
 #include "Chain.h"
 #include "Player.h"
 #include "Player.cpp"
 #include "Table.h"
 #include "Table.cpp"
 
-using namespace std;
 
-// Helper functions to add a card to a chain and create a new chain
-bool addCardToChain(Chain_Base& chain, Card* card);
-Chain_Base* createChainForCard(Card* card);
-
-int main() {
-    // Initialize variables
-    CardFactory* cardFactory = CardFactory::getFactory();
-    Table table;
-    string input;
-    string playerName1, playerName2;
-    bool newGame = false;
-    char choice;
-
-    // Ask user whether to start a new game or load from file
-    cout << "Do you want to load a saved game? (y/n): ";
-    cin >> choice;
-    cin.ignore(); // Consume newline character
-
-    if (choice == 'y' || choice == 'Y') {
-        // Load game from file
-        ifstream file("gamesave.txt");
-        if (!file) {
-            cout << "No saved game found. Starting a new game." << endl;
-            newGame = true;
-        } else {
-            // Load the game
-            table = Table(file, cardFactory);
-            file.close();
+void addCardToChain(Player& playerInstance, Table* tb, Card* card){
+    bool success = false;
+    for (auto chain: playerInstance.getChains()){
+        if(chain!=nullptr && ((*chain).getChainType() == (*card).getName())){
+            (*chain).addCard(card);
+            success = true;
+            cout << "Successfully added " << (*card).getName() << " to an existing chain.\n";
+            break;
         }
-    } else {
-        newGame = true;
+    }
+    if(success == false){
+        //find empty chain slot to start new chain with new card
+        bool emptyChainSlotFound = false;
+        for(size_t i=0; i<playerInstance.getChains().size();++i){
+            if(playerInstance.getChains()[i] == nullptr){
+                //free slot found, lets create a new chain. 
+                if (card->getName() == "Blue") {
+                    playerInstance.getChains()[i] = new Chain<Blue>();
+                }
+                else if (card->getName() == "Chili") {
+                    playerInstance.getChains()[i] = new Chain<Chili>();
+                }
+                else if (card->getName() == "Stink") {
+                    playerInstance.getChains()[i] = new Chain<Stink>();
+                }
+                else if (card->getName() == "Green") {
+                    playerInstance.getChains()[i] = new Chain<Green>();
+                }
+                else if (card->getName() == "soy") {
+                    playerInstance.getChains()[i] = new Chain<soy>();
+                }
+                else if (card->getName() == "black") {
+                    playerInstance.getChains()[i] = new Chain<black>();
+                }
+                else if (card->getName() == "Red") {
+                    playerInstance.getChains()[i] = new Chain<Red>();
+                }
+                else if (card->getName() == "garden") {
+                    playerInstance.getChains()[i] = new Chain<garden>();
+                }
+                playerInstance.getChains()[i]->addCard(card);
+                cout << "A new " << card->getName() <<" chain was created.\n";
+                emptyChainSlotFound = true;
+                break;
+            }
+        }
+        if(emptyChainSlotFound == false){
+        cout << "You are full on chains! You must sell one if you wish to add the card.\n";
+        for (size_t i=0; i<playerInstance.getChains().size(); ++i){
+            if(playerInstance.getChains()[i]!=nullptr){
+                std::cout << "Chain #" << (i + 1) << ": ";
+                playerInstance.getChains()[i]->print(cout);
+            }
+        }
+        int deadChainIndex;
+        do {
+            std::cout << "Enter the index of the chain to sell (1-" << playerInstance.getMaxNumChains() << "): ";
+            std::cin >> deadChainIndex;
+            deadChainIndex--; // Adjust for 0-based index
+        } while (deadChainIndex < 0 || deadChainIndex >= playerInstance.getMaxNumChains() || playerInstance.getChains()[deadChainIndex] == nullptr);
+        int money = playerInstance.getChains()[deadChainIndex]->sell();
+        playerInstance += money;
+        delete playerInstance.getChains()[deadChainIndex];
+        playerInstance.getChains()[deadChainIndex] = nullptr;
+        cout << "You sold chain " << (deadChainIndex) << " for " << money << " coins.\n";
+        if (card->getName() == "Blue") {
+            playerInstance.getChains()[deadChainIndex] = new Chain<Blue>();
+        }
+        else if (card->getName() == "Chili") {
+            playerInstance.getChains()[deadChainIndex] = new Chain<Chili>();
+        }
+        else if (card->getName() == "Stink") {
+            playerInstance.getChains()[deadChainIndex] = new Chain<Stink>();
+        }
+        else if (card->getName() == "Green") {
+            playerInstance.getChains()[deadChainIndex] = new Chain<Green>();
+        }
+        else if (card->getName() == "soy") {
+            playerInstance.getChains()[deadChainIndex] = new Chain<soy>();
+        }
+        else if (card->getName() == "black") {
+            playerInstance.getChains()[deadChainIndex] = new Chain<black>();
+        }
+        else if (card->getName() == "Red") {
+            playerInstance.getChains()[deadChainIndex] = new Chain<Red>();
+        }
+        else if (card->getName() == "garden") {
+            playerInstance.getChains()[deadChainIndex] = new Chain<garden>();
+        }
+        playerInstance.getChains()[deadChainIndex]->addCard(card);
+        cout << "A new " << card->getName() <<" chain was created.\n";
+        }
+    }
+}
+
+
+void saveGameToFile(Table& table){
+    ofstream file("savegame.txt");
+    if(file.is_open()){
+        table.saveAllDataToFile(file);
+        file.close();
+    }
+}
+
+
+
+
+int main(){
+    string p1Name;
+    string p2Name;
+    CardFactory* cf = CardFactory::getFactory();
+    bool gameDoneFlag = false;
+    string winningPlayerName;
+    char userInput;
+    cout << "Do you want to load from a saved game file? (y/n): ";
+    cin >> userInput;
+    Table* tbp = nullptr;
+    if(userInput == 'Y' || userInput == 'y'){
+        ifstream fileInStream("savegame.txt");
+        bool successFlagFileOpen = fileInStream.is_open();
+        if(successFlagFileOpen){
+            tbp = new Table(fileInStream, cf);
+            fileInStream.close();
+            cout << "Data read from file\n";
+        }else{
+            cout << "Enter the name fo the 1st player: ";
+            cin >> p1Name;
+            cout << "Enter the name of the 2nd player: ";
+            cin >> p2Name;
+            tbp = new Table(p1Name, p2Name, cf);
+        }
+
+    }else{
+        cout << "Enter the name fo the 1st player: ";
+        cin >> p1Name;
+        cout << "Enter the name of the 2nd player: ";
+        cin >> p2Name;
+        tbp = new Table(p1Name, p2Name, cf);
     }
 
-    if (newGame) {
-        // Start a new game
-        cout << "Enter name of Player 1: ";
-        getline(cin, playerName1);
-        cout << "Enter name of Player 2: ";
-        getline(cin, playerName2);
+    while(!gameDoneFlag){
+        for(int turnIndex = 0; turnIndex <= 1; ++turnIndex){
+            Player& playingPlayer = (turnIndex==0) ? tbp->player1 : tbp->player2;
+            Player& stallPlayer = (turnIndex==0) ? tbp->player2 : tbp->player1;
+            cout<< "It's " <<  playingPlayer.getName() << "'s turn.\n";
+            cout<< *tbp << endl;
+            cout<< "Would you like to save the game? (y/n): ";
+            cin >> userInput;
+            if(userInput == 'Y' || userInput == 'y'){
+                saveGameToFile(*tbp);
+                delete tbp;//delete table and break loop
+                return 0;
+            }
+            
 
-        // Initialize the Deck
-        Deck deck = cardFactory->getDeck();
+            int numCardsTA = tbp->tradeArea.numCards();
+            //go through cards on trade floor 
+            if(numCardsTA > 0){
+                cout<< "Cards were left in the trade area from " << stallPlayer.getName() <<"\n"<< endl;
+                cout<< "Current " << tbp->tradeArea << endl;
+                auto taCards = tbp->tradeArea.getCards();
+                for (auto start = taCards.begin(); start != taCards.end();){
+                    Card* card = *start;
+                    //propose to player to add the card to one of their chain
+                    cout << "Would you like to add the card [" << (*card).getName() << "] to your chains? (y/n): ";
+                    cin >> userInput;
+                    if(userInput == 'Y' || userInput == 'y'){
+                        addCardToChain(playingPlayer, tbp, card);
+                        start = taCards.erase(start); //remove from the trade floor
+                    }
+                    else{
+                        tbp->discardPile += card; //send card to the graveyard lol
+                        start = taCards.erase(start); //remove from the trade floor
+                        cout << "You have discarded " << (*card).getName() << ".\n";
+                    }
+                }
+                tbp->tradeArea = TradeArea(); //reset
+                //rebuild
+                for (auto card : taCards){
+                    tbp->tradeArea+=card;
+                }
+            }
 
-        // Create Players
-        Player player1(playerName1);
-        Player player2(playerName2);
+            //play from hand
+            playingPlayer.getHand().print(cout);
+            Card* frontCard = playingPlayer.getHand().play();
+            //check if we have a top card... 
+            if(frontCard){
+                cout << "Your top card is " << frontCard->getName()  << "\n" << endl;
+                //do we ask here if user wants to add to chain? Or is it forced?? 
+                addCardToChain(playingPlayer, tbp, frontCard);
+            }
+            //ask if player wants to repeat play from hand
+            cout << "Would you like to play the next top card from your hand? (y/n): ";
+            cin >> userInput;
 
-        // Draw 5 cards for each player's Hand
-        for (int i = 0; i < 5; ++i) {
-            player1.getPlayerHand() += deck.draw();
-            player2.getPlayerHand() += deck.draw();
-        }
-
-        // Initialize Table
-        table = Table();
-        table.player1 = player1;
-        table.player2 = player2;
-        table.deck = deck;
-    }
-
-    // Main game loop
-    while (table.getDeck().size() > 0) {
-        // Ask if user wants to pause and save the game
-        cout << "Do you want to pause and save the game? (y/n): ";
-        cin >> choice;
-        cin.ignore();
-        if (choice == 'y' || choice == 'Y') {
-            // Save the game
-            ofstream file("gamesave.txt");
-            table.saveAllDataToFile(file);
-            file.close();
-            cout << "Game saved to gamesave.txt. Exiting..." << endl;
-            return 0;
-        }
-
-        // For each player
-        for (int i = 0; i < 2; ++i) {
-            // Determine current player
-            Player& currentPlayer = (i == 0) ? table.getPlayer1() : table.getPlayer2();
-
-            cout << "\nIt's " << currentPlayer.getName() << "'s turn." << endl;
-
-            // Display Table
-            cout << table;
-
-            // Step 1: If TradeArea is not empty
-            if (table.getTradeArea()->numCards() > 0) {
-                cout << "TradeArea has the following cards:" << endl;
-                cout << *(table.getTradeArea()) << endl;
-
-                // For each card in TradeArea
-                while (table.getTradeArea()->numCards() > 0) {
-                    Card* tradeCard = table.getTradeArea()->trade("");
-                    cout << "Do you want to chain the card: " << tradeCard->getName() << "? (y/n): ";
-                    cin >> choice;
-                    cin.ignore();
-                    if (choice == 'y' || choice == 'Y') {
-                        // Add the card to the appropriate chain, or start a new chain
-                        string cardName = tradeCard->getName();
-                        bool chainFound = false;
-
-                        // Check if player has a chain of this type
-                        for (int c = 0; c < currentPlayer.getNumChains(); ++c) {
-                            if (currentPlayer[c].getChainType() == cardName) {
-                                // Add the card to the chain
-                                Chain_Base& chain = currentPlayer[c];
-                                bool cardAdded = addCardToChain(chain, tradeCard);
-                                if (!cardAdded) {
-                                    cout << "Error adding card to chain." << endl;
-                                }
-                                chainFound = true;
-                                break;
-                            }
-                        }
-
-                        if (!chainFound) {
-                            // Player does not have a chain of this type
-                            if (currentPlayer.getNumChains() < currentPlayer.getMaxNumChains()) {
-                                // Start a new chain
-                                Chain_Base* newChain = createChainForCard(tradeCard);
-                                currentPlayer.addChain(newChain);
-                            } else {
-                                // Player must sell an existing chain to start a new one
-                                cout << "No available chain slots. You must sell an existing chain to start a new one." << endl;
-                                // Let the player choose a chain to sell
-                                cout << "Your chains are: " << endl;
-                                for (int c = 0; c < currentPlayer.getNumChains(); ++c) {
-                                    cout << c+1 << ": ";
-                                    currentPlayer[c].print(cout);
-                                    cout << endl;
-                                }
-                                cout << "Select a chain to sell (enter number): ";
-                                int chainIndex;
-                                cin >> chainIndex;
-                                cin.ignore();
-                                chainIndex--; // Adjust for zero-based index
-                                if (chainIndex >= 0 && chainIndex < currentPlayer.getNumChains()) {
-                                    // Sell the chain
-                                    int coinsEarned = currentPlayer[chainIndex].sell();
-                                    currentPlayer += coinsEarned;
-                                    // Remove the chain
-                                    currentPlayer.removeChain(chainIndex);
-                                    // Now create a new chain
-                                    Chain_Base* newChain = createChainForCard(tradeCard);
-                                    currentPlayer.addChain(newChain);
-                                } else {
-                                    cout << "Invalid choice." << endl;
-                                }
-                            }
-                        }
-                    } else {
-                        // Leave the card in the TradeArea for the next player
-                        table.getTradeArea()->operator+=(tradeCard);
-                        break; // Exit the loop
+            if(userInput == 'Y' || userInput == 'y'){
+                Card* handsNextCard = playingPlayer.getHand().play();
+                if(handsNextCard){
+                    cout << "Your top card is " << handsNextCard->getName()  << "\n" << endl;
+                    cout << "Would you like to add the card [" << (*handsNextCard).getName() << "] to your chains? (y/n): ";
+                    cin >> userInput;
+                    if(userInput == 'Y' || userInput == 'y'){
+                        addCardToChain(playingPlayer, tbp, handsNextCard);
+                    }
+                    else{
+                        tbp->discardPile += handsNextCard;
+                        cout << "You have discarded " << (*handsNextCard).getName() << ".\n";
                     }
                 }
             }
 
-            // Step 2: Play topmost card from Hand
-            if (currentPlayer.getPlayerHand().getSize() > 0) {
-                Card* topCard = currentPlayer.getPlayerHand().play();
-                cout << "You played: " << topCard->getName() << endl;
-
-                // Add the card to a chain with the same beans
-                string cardName = topCard->getName();
-                bool chainFound = false;
-
-                // Check if player has a chain of this type
-                for (int c = 0; c < currentPlayer.getNumChains(); ++c) {
-                    if (currentPlayer[c].getChainType() == cardName) {
-                        // Add the card to the chain
-                        Chain_Base& chain = currentPlayer[c];
-                        bool cardAdded = addCardToChain(chain, topCard);
-                        if (!cardAdded) {
-                            cout << "Error adding card to chain." << endl;
-                        }
-                        chainFound = true;
-                        break;
-                    }
+            //discard card from hand
+            cout << "Would you like to discard a card from your hand? (y/n): ";
+            cin >> userInput;
+            if(userInput == 'Y' || userInput == 'y'){
+                playingPlayer.printHand(cout, true);//show player hand
+                cout << "Select which card to discard (index from 0): ";
+                int userInputDesiredIndex;
+                cin >> userInputDesiredIndex;
+                Card* deadCard = playingPlayer.getHand()[userInputDesiredIndex];
+                if(deadCard){
+                    //throw to discard pile
+                    tbp->discardPile += deadCard;
+                    cout << "You have discarded " << (*deadCard).getName() << ".\n";
                 }
-
-                if (!chainFound) {
-                    // Player does not have a chain of this type
-                    if (currentPlayer.getNumChains() < currentPlayer.getMaxNumChains()) {
-                        // Start a new chain
-                        Chain_Base* newChain = createChainForCard(topCard);
-                        currentPlayer.addChain(newChain);
-                    } else {
-                        // Player must sell an existing chain to start a new one
-                        cout << "No available chain slots. You must sell an existing chain to start a new one." << endl;
-                        // Let the player choose a chain to sell
-                        cout << "Your chains are: " << endl;
-                        for (int c = 0; c < currentPlayer.getNumChains(); ++c) {
-                            cout << c+1 << ": ";
-                            currentPlayer[c].print(cout);
-                            cout << endl;
-                        }
-                        cout << "Select a chain to sell (enter number): ";
-                        int chainIndex;
-                        cin >> chainIndex;
-                        cin.ignore();
-                        chainIndex--; // Adjust for zero-based index
-                        if (chainIndex >= 0 && chainIndex < currentPlayer.getNumChains()) {
-                            // Sell the chain
-                            int coinsEarned = currentPlayer[chainIndex].sell();
-                            currentPlayer += coinsEarned;
-                            // Remove the chain
-                            currentPlayer.removeChain(chainIndex);
-                            // Now create a new chain
-                            Chain_Base* newChain = createChainForCard(topCard);
-                            currentPlayer.addChain(newChain);
-                        } else {
-                            cout << "Invalid choice." << endl;
-                        }
-                    }
+                else{
+                    cout << "You have selected an invalid index.\n";
                 }
             }
 
-            // Step 3: Option to repeat Step 2
-            cout << "Do you want to play the next topmost card from your hand? (y/n): ";
-            cin >> choice;
-            cin.ignore();
-            if (choice == 'y' || choice == 'Y') {
-                if (currentPlayer.getPlayerHand().getSize() > 0) {
-                    // Repeat Step 2
-                    Card* topCard = currentPlayer.getPlayerHand().play();
-                    cout << "You played: " << topCard->getName() << endl;
-
-                    // Add the card to a chain with the same beans
-                    string cardName = topCard->getName();
-                    bool chainFound = false;
-
-                    // Check if player has a chain of this type
-                    for (int c = 0; c < currentPlayer.getNumChains(); ++c) {
-                        if (currentPlayer[c].getChainType() == cardName) {
-                            // Add the card to the chain
-                            Chain_Base& chain = currentPlayer[c];
-                            bool cardAdded = addCardToChain(chain, topCard);
-                            if (!cardAdded) {
-                                cout << "Error adding card to chain." << endl;
-                            }
-                            chainFound = true;
-                            break;
-                        }
-                    }
-
-                    if (!chainFound) {
-                        // Player does not have a chain of this type
-                        if (currentPlayer.getNumChains() < currentPlayer.getMaxNumChains()) {
-                            // Start a new chain
-                            Chain_Base* newChain = createChainForCard(topCard);
-                            currentPlayer.addChain(newChain);
-                        } else {
-                            // Player must sell an existing chain to start a new one
-                            cout << "No available chain slots. You must sell an existing chain to start a new one." << endl;
-                            // Let the player choose a chain to sell
-                            cout << "Your chains are: " << endl;
-                            for (int c = 0; c < currentPlayer.getNumChains(); ++c) {
-                                cout << c+1 << ": ";
-                                currentPlayer[c].print(cout);
-                                cout << endl;
-                            }
-                            cout << "Select a chain to sell (enter number): ";
-                            int chainIndex;
-                            cin >> chainIndex;
-                            cin.ignore();
-                            chainIndex--; // Adjust for zero-based index
-                            if (chainIndex >= 0 && chainIndex < currentPlayer.getNumChains()) {
-                                // Sell the chain
-                                int coinsEarned = currentPlayer[chainIndex].sell();
-                                currentPlayer += coinsEarned;
-                                // Remove the chain
-                                currentPlayer.removeChain(chainIndex);
-                                // Now create a new chain
-                                Chain_Base* newChain = createChainForCard(topCard);
-                                currentPlayer.addChain(newChain);
-                            } else {
-                                cout << "Invalid choice." << endl;
-                            }
-                        }
-                    }
-                } else {
-                    cout << "Your hand is empty." << endl;
+            //draw three from deck and put in TA
+            for(int numCards = 0; numCards < 3; numCards++){
+                Card* tempCard = tbp->deck.draw();
+                if(tempCard){//check if card was drawn
+                    tbp->tradeArea += tempCard;
                 }
             }
 
-            // Step 4: Option to discard a card
-            cout << "Do you want to discard an arbitrary card from your hand? (y/n): ";
-            cin >> choice;
-            cin.ignore();
-            if (choice == 'y' || choice == 'Y') {
-                // Show the player's full hand and player selects an arbitrary card
-                cout << "Your hand is: " << endl;
-                currentPlayer.printHand(cout, true);
-                cout << "Enter the index (starting from 1) of the card you want to discard: ";
-                int discardIndex;
-                cin >> discardIndex;
-                cin.ignore();
-                discardIndex--; // Adjust for zero-based index
-                if (discardIndex >= 0 && discardIndex < currentPlayer.getPlayerHand().getSize()) {
-                    // Discard the arbitrary card from the player's hand and place it on the discard pile.
-                    Card* discardedCard = currentPlayer.getPlayerHand()[discardIndex];
-                    table.getDiscardPile()->operator+=(discardedCard);
-                } else {
-                    cout << "Invalid index." << endl;
+            //populate trade area while matches ta bean
+            while(tbp->discardPile.top() && tbp->tradeArea.legal(tbp->discardPile.top())){
+                tbp->tradeArea += tbp -> discardPile.pickUp();//loop until no match
+            }
+
+            //allow chain of cards from trade area
+            auto taCards = tbp->tradeArea.getCards();
+            for (auto start = taCards.begin(); start != taCards.end();) {
+                Card* card = *start;
+                std::cout << "Trade Area Card: " << card->getName() << "\n";
+                std::cout << "Would you like to add it to your chain? (y/n): ";
+                std::cin >> userInput;
+                if (userInput == 'y' || userInput == 'Y') {
+                    //TODO ADD CARD TO CHAIN!
+                    addCardToChain(playingPlayer, tbp, card);
+                    start = taCards.erase(start);
+                }
+                else {
+                    ++start;
                 }
             }
 
-            // Step 5: Draw three cards from the deck and place them in the trade area
-            for (int i = 0; i < 3; ++i) {
-                if (table.getDeck().size() > 0) {
-                    Card* tradeCard = table.getDeck().draw();
-                    table.getTradeArea()->operator+=(tradeCard);
-                } else {
-                    cout << "Deck is empty." << endl;
-                    break;
-                }
+            tbp->tradeArea = TradeArea(); //reset
+                //rebuild
+            for (auto card : taCards){
+                tbp->tradeArea+=card;
             }
 
-            // Draw cards from the discard pile as long as the card matches one of the beans in the trade area
-            while (table.getDiscardPile()->top() != nullptr &&
-                table.getTradeArea()->legal(table.getDiscardPile()->top())) {
-                // Draw the top-most card from the discard pile and place it in the trade area
-                Card* discardTopCard = table.getDiscardPile()->pickUp();
-                table.getTradeArea()->operator+=(discardTopCard);
-            }
 
-            // Player can either chain the cards or leave them in the trade area for the next player
-            cout << "TradeArea has the following cards:" << endl;
-            cout << *(table.getTradeArea()) << endl;
-
-            // For each card in TradeArea
-            while (table.getTradeArea()->numCards() > 0) {
-                Card* tradeCard = table.getTradeArea()->trade("");
-                cout << "Do you want to chain the card: " << tradeCard->getName() << "? (y/n): ";
-                cin >> choice;
-                cin.ignore();
-                if (choice == 'y' || choice == 'Y') {
-                    // Add the card to the appropriate chain, or start a new chain
-                    string cardName = tradeCard->getName();
-                    bool chainFound = false;
-
-                    // Check if player has a chain of this type
-                    for (int c = 0; c < currentPlayer.getNumChains(); ++c) {
-                        if (currentPlayer[c].getChainType() == cardName) {
-                            // Add the card to the chain
-                            Chain_Base& chain = currentPlayer[c];
-                            bool cardAdded = addCardToChain(chain, tradeCard);
-                            if (!cardAdded) {
-                                cout << "Error adding card to chain." << endl;
-                            }
-                            chainFound = true;
-                            break;
-                        }
-                    }
-
-                    if (!chainFound) {
-                        // Player does not have a chain of this type
-                        if (currentPlayer.getNumChains() < currentPlayer.getMaxNumChains()) {
-                            // Start a new chain
-                            Chain_Base* newChain = createChainForCard(tradeCard);
-                            currentPlayer.addChain(newChain);
-                        } else {
-                            // Player must sell an existing chain to start a new one
-                            cout << "No available chain slots. You must sell an existing chain to start a new one." << endl;
-                            // Let the player choose a chain to sell
-                            cout << "Your chains are: " << endl;
-                            for (int c = 0; c < currentPlayer.getNumChains(); ++c) {
-                                cout << c+1 << ": ";
-                                currentPlayer[c].print(cout);
-                                cout << endl;
-                            }
-                            cout << "Select a chain to sell (enter number): ";
-                            int chainIndex;
-                            cin >> chainIndex;
-                            cin.ignore();
-                            chainIndex--; // Adjust for zero-based index
-                            if (chainIndex >= 0 && chainIndex < currentPlayer.getNumChains()) {
-                                // Sell the chain
-                                int coinsEarned = currentPlayer[chainIndex].sell();
-                                currentPlayer += coinsEarned;
-                                // Remove the chain
-                                currentPlayer.removeChain(chainIndex);
-                                // Now create a new chain
-                                Chain_Base* newChain = createChainForCard(tradeCard);
-                                currentPlayer.addChain(newChain);
-                            } else {
-                                cout << "Invalid choice." << endl;
-                            }
-                        }
-                    }
-                } else {
-                    // Leave the card in the TradeArea for the next player
-                    table.getTradeArea()->operator+=(tradeCard);
-                    break; // Exit the loop
-                }
-            }
-
-            // Step 6: Draw two cards from Deck and add to player's hand
+            //Add 2 cards from deck to player hand
             for (int i = 0; i < 2; ++i) {
-                if (table.getDeck().size() > 0) {
-                    Card* drawnCard = table.getDeck().draw();
-                    currentPlayer.getPlayerHand() += drawnCard;
-                } else {
-                    cout << "Deck is empty." << endl;
-                    break;
+                Card* cardDrawn = tbp->deck.draw();
+                if (cardDrawn) {
+                    playingPlayer.getHand() += cardDrawn;
                 }
             }
-        } // End of player loop
-    } // End of main game loop
 
-    // Check who wins
-    string winnerName;
-    if (table.win(winnerName)) {
-        cout << "Game over! The winner is " << winnerName << endl;
-    } else {
-        cout << "Game over! It's a tie!" << endl;
-    }
+            //wincon
+            if(tbp->win(winningPlayerName)){
+                gameDoneFlag = true;
+                break; //exit game loop
+            }
 
-    return 0;
-}
+        }
+    } 
+    cout << "Game Over! Congrats to the winner, " << winningPlayerName << "!" << endl;
 
-// Helper function to add a card to a chain
-bool addCardToChain(Chain_Base& chain, Card* card) {
-    string cardName = card->getName();
-
-    // For each possible card type
-    if (cardName == "Red") {
-        Chain<Red>* chainPtr = dynamic_cast<Chain<Red>*>(&chain);
-        if (chainPtr) {
-            *chainPtr += card;
-            return true;
-        }
-    } else if (cardName == "Blue") {
-        Chain<Blue>* chainPtr = dynamic_cast<Chain<Blue>*>(&chain);
-        if (chainPtr) {
-            *chainPtr += card;
-            return true;
-        }
-    } else if (cardName == "Chili") {
-        Chain<Chili>* chainPtr = dynamic_cast<Chain<Chili>*>(&chain);
-        if (chainPtr) {
-            *chainPtr += card;
-            return true;
-        }
-    } else if (cardName == "Stink") {
-        Chain<Stink>* chainPtr = dynamic_cast<Chain<Stink>*>(&chain);
-        if (chainPtr) {
-            *chainPtr += card;
-            return true;
-        }
-    } else if (cardName == "Green") {
-        Chain<Green>* chainPtr = dynamic_cast<Chain<Green>*>(&chain);
-        if (chainPtr) {
-            *chainPtr += card;
-            return true;
-        }
-    } else if (cardName == "Soy") {
-        Chain<soy>* chainPtr = dynamic_cast<Chain<soy>*>(&chain);
-        if (chainPtr) {
-            *chainPtr += card;
-            return true;
-        }
-    } else if (cardName == "Black") {
-        Chain<black>* chainPtr = dynamic_cast<Chain<black>*>(&chain);
-        if (chainPtr) {
-            *chainPtr += card;
-            return true;
-        }
-    } else if (cardName == "Garden") {
-        Chain<garden>* chainPtr = dynamic_cast<Chain<garden>*>(&chain);
-        if (chainPtr) {
-            *chainPtr += card;
-            return true;
-        }
-    }
-
-    return false;
-}
-
-// Helper function to create a new chain for a card and add the card to it
-Chain_Base* createChainForCard(Card* card) {
-    string cardName = card->getName();
-
-    if (cardName == "Red") {
-        Chain<Red>* chain = new Chain<Red>();
-        *chain += card;
-        return chain;
-    } else if (cardName == "Blue") {
-        Chain<Blue>* chain = new Chain<Blue>();
-        *chain += card;
-        return chain;
-    } else if (cardName == "Chili") {
-        Chain<Chili>* chain = new Chain<Chili>();
-        *chain += card;
-        return chain;
-    } else if (cardName == "Stink") {
-        Chain<Stink>* chain = new Chain<Stink>();
-        *chain += card;
-        return chain;
-    } else if (cardName == "Green") {
-        Chain<Green>* chain = new Chain<Green>();
-        *chain += card;
-        return chain;
-    } else if (cardName == "Soy") {
-        Chain<soy>* chain = new Chain<soy>();
-        *chain += card;
-        return chain;
-    } else if (cardName == "Black") {
-        Chain<black>* chain = new Chain<black>();
-        *chain += card;
-        return chain;
-    } else if (cardName == "Garden") {
-        Chain<garden>* chain = new Chain<garden>();
-        *chain += card;
-        return chain;
-    }
-
-    return nullptr;
+    delete tbp;
+    return 0;  
 }

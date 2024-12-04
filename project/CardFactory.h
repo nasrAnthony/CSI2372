@@ -13,6 +13,7 @@ using namespace std;
 class CardFactory {
 private:
     Deck deck;
+    vector<Card*> cards;
     static CardFactory* factory;
     CardFactory(const CardFactory&) = delete;             // Private copy constructor
     CardFactory& operator=(const CardFactory&) = delete;  // Private assignment operator
@@ -20,7 +21,7 @@ private:
 
 public:
     static CardFactory* getFactory();
-    Deck getDeck();
+    Deck getDeck() const;
 
     Card* createCard(const string& type) const;
 };

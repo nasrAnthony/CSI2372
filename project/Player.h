@@ -21,12 +21,14 @@ class Player {
 
 public:
     Player() : playerName(""), playerNumCoins(0), playerMaxChainFlag(false) {} // Default constructor
-    Player(string& name) : playerName(name), playerNumCoins(0), playerMaxChainFlag(false) {}
+    Player(string& name) : playerName(name), playerNumCoins(0), playerMaxChainFlag(false) {
+        chains.resize(2, nullptr);
+    }
     Player(istream& in, const CardFactory* factory);
     ~Player(); // Destructor to clean up chains
     string getName() const;
-    Hand getHand(){ return playerHand;}
-    vector<Chain_Base*> getChains() const { return chains; }
+    Hand& getHand(){ return playerHand;}
+    vector<Chain_Base*>& getChains() { return chains; }
     int getNumCoins() const;
     Player& operator+=(int num); // Add coins
     int getMaxNumChains() const;
