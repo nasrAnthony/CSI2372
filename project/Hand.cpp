@@ -1,11 +1,22 @@
 #include "Hand.h"
+#include <sstream>
 
 // Constructor to build Hand from a stream
 Hand::Hand(istream& in, const CardFactory* factory) {
     string cardType;
+    
     while (in >> cardType) {
-        Card* card = factory->createCard(cardType);
-        cardsInHand.push_back(card); // Add to deque
+        if(cardType == "Hand:"){
+            continue;
+        }
+        else if(cardType == "."){
+            break;
+            
+        }
+        else{
+            Card* card = factory->createCard(cardType);
+            cardsInHand.push_back(card); // Add to deque
+        }
     }
 }
 
@@ -52,5 +63,6 @@ ostream& operator<<(ostream& out, const Hand& h) {
         card->print(out);
         out << " ";
     }
+    out << " . ";
     return out;
 }

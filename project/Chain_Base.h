@@ -2,6 +2,7 @@
 #define CHAIN_BASE_H
 
 #include <iostream>
+#include <string>
 
 class Chain_Base {
 public:
@@ -9,7 +10,7 @@ public:
     virtual int sell() = 0;
     virtual int getSize() const = 0;
     virtual void print(std::ostream& out) const = 0;
-    virtual string getChainType() = 0;
+    virtual std::string getChainType() const = 0; // Explicitly use std::string
     virtual void addCard(Card* card) = 0;
 };
 

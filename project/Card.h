@@ -59,7 +59,7 @@ class Stink : public Card {
         int coinTable [4];
         Stink(): name("Stink"), coinTable{3,5,7,8}{}
         int getCardsPerCoin(int coins){
-            return 0;
+            return *(coinTable + (coins - 1));
         }
         string getName(){
             return name;

@@ -13,8 +13,8 @@ using namespace std;
 class Table {
 
 public: 
-    Player player1;
-    Player player2;
+    Player* player1;
+    Player* player2;
     Deck deck;
     DiscardPile discardPile;
     TradeArea tradeArea;
@@ -26,8 +26,8 @@ public:
     
     friend ostream& operator<<(ostream& out, Table& tab);
     // Getters
-    Player& getPlayer1() { return player1; }
-    Player& getPlayer2() { return player2; }
+    Player& getPlayer1() { return *player1; }
+    Player& getPlayer2() { return *player2; }
     Deck& getDeck() { return deck; }
     DiscardPile* getDiscardPile() { return &discardPile; }
     TradeArea* getTradeArea() { return &tradeArea; }

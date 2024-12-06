@@ -1,39 +1,43 @@
 #include "Player.h"
 
-Player::Player(istream& in, const CardFactory* factory) {
+Player::Player(std::istream& in, const CardFactory* factory) {
     in >> playerName;
+
     in >> playerNumCoins;
+
     int numChainsFromFile;
     in >> numChainsFromFile;
     playerMaxChainFlag = (numChainsFromFile == 3);
     chains.resize(numChainsFromFile, nullptr);
+
     for (int i = 0; i < numChainsFromFile; i++) {
         std::string chainType;
         in >> chainType;
-        // Create the appropriate chain based on the type
-        if (chainType == "Blue") {
-            chains.push_back(new Chain<Blue>(in, factory));
-        } else if (chainType == "Chili") {
-            chains.push_back(new Chain<Chili>(in, factory));
-        } else if (chainType == "Stink") {
-            chains.push_back(new Chain<Stink>(in, factory));
-        } else if (chainType == "Green") {
-            chains.push_back(new Chain<Green>(in, factory));
-        } else if (chainType == "Soy") {
-            chains.push_back(new Chain<soy>(in, factory));
-        } else if (chainType == "Black") {
-            chains.push_back(new Chain<black>(in, factory));
-        } else if (chainType == "Red") {
-            chains.push_back(new Chain<Red>(in, factory));
-        } else if (chainType == "Garden") {
-            chains.push_back(new Chain<garden>(in, factory));
+        if (chainType == "Blue" || chainType == "blue") {
+            chains[i] = new Chain<Blue>(in, factory);
+        } else if (chainType == "Chili" || chainType == "chili") {
+            chains[i] = new Chain<Chili>(in, factory);
+        } else if (chainType == "Stink" || chainType == "stink") {
+            chains[i] = new Chain<Stink>(in, factory);
+        } else if (chainType == "Green" || chainType == "green") {
+            chains[i] = new Chain<Green>(in, factory);
+        } else if (chainType == "Soy" || chainType == "soy") {
+            chains[i] = new Chain<soy>(in, factory);
+        } else if (chainType == "Black" || chainType == "black") {
+            chains[i] = new Chain<black>(in, factory);
+        } else if (chainType == "Red" || chainType == "red") {
+            chains[i] = new Chain<Red>(in, factory);
+        } else if (chainType == "Garden" || chainType == "garden") {
+            chains[i] = new Chain<garden>(in, factory);
+        } else if (chainType == "Empty") {
+            chains[i] = nullptr;
         } else {
-            throw runtime_error("Unknown chain type: " + chainType);
+            throw std::runtime_error("Unknown chain type: " + chainType);
         }
     }
-    // Read player's hand
     playerHand = Hand(in, factory);
 }
+
 
 Player::~Player() {
     // Clean up chains
@@ -91,9 +95,9 @@ void Player::buyThirdChain() {
     if (playerNumCoins < 3) {
         throw runtime_error("NotEnoughCoins");
     } else {
-        playerMaxChainFlag = true; // Just bought the 3rd chain
+        playerMaxChainFlag = true;
         playerNumCoins -= 3;
-        // Chains are added when cards are played
+        chains.push_back(nullptr);
     }
 }
 
@@ -117,7 +121,7 @@ std::ostream& operator<<(std::ostream& out, Player& p) {
 
     // Display player chains
     for (size_t i = 0; i < p.getChains().size(); i++) {
-        out << "Chain " << i + 1 << ": ";
+        out << "Chain " << i + 1 << ": ";   
         if(p.getChains()[i] == nullptr){
             out << "Empty"<<endl;
         }else{

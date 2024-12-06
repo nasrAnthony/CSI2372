@@ -37,14 +37,14 @@ Deck CardFactory::getDeck() const {
 }
 
 Card* CardFactory::createCard(const string& type) const {
-    if (type == "Blue") return new Blue();
-    else if (type == "Chili") return new Chili();
-    else if (type == "Stink") return new Stink();
-    else if (type == "Green") return new Green();
-    else if (type == "Soy") return new soy();
-    else if (type == "Black") return new black();
-    else if (type == "Red") return new Red();
-    else if (type == "Garden") return new garden();
+    if (type == "Blue" || type == "blue" || type == "B") return new Blue();
+    else if (type == "Chili" || type == "chili" || type == "C") return new Chili();
+    else if (type == "Stink"|| type == "stink" || type == "S") return new Stink();
+    else if (type == "Green"|| type == "green" || type == "G") return new Green();
+    else if (type == "Soy" || type == "soy" || type == "s") return new soy();
+    else if (type == "Black"|| type == "black" || type == "b") return new black();
+    else if (type == "Red"|| type == "red" || type == "R") return new Red();
+    else if (type == "Garden"|| type == "garden" || type == "g") return new garden();
     else return nullptr; // Handle unrecognized types
 }
 

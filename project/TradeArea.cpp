@@ -3,6 +3,15 @@
 TradeArea::TradeArea(istream& in, const CardFactory* factory) {
     string cardType;
     while (in >> cardType) {
+        if(cardType == "TradeArea:"){
+            continue;
+        }
+        if(cardType == "Empty."){
+            break;
+        }
+        if(cardType == "."){
+            break;
+        }
         Card* card = factory->createCard(cardType);
         cardList.push_back(card);
     }

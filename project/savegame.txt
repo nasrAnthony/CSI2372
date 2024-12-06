@@ -1,3 +1,16 @@
-meow
+Tony
 0
 2
+Stink S S S S S .
+Blue B B B B B B .
+Hand: s B B G g G  . 
+
+Meow
+0
+2
+Chili C .
+soy s .
+Hand: G S B G s s  . 
+Deck: Stink black Chili Green black Green Stink Chili Blue Chili Chili Chili garden Chili Chili soy Blue black Blue Chili Stink Blue Green Chili Chili Chili soy soy soy Stink Green Stink Chili Green black soy Stink Green Blue black Stink Blue Green black soy Blue Stink garden Stink Blue Blue black Blue garden black soy Stink Chili Green Chili Stink Blue Blue Chili Chili Blue black Blue black Blue garden .
+DiscardPile: B .
+TradeArea: Chili garden Green

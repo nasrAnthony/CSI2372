@@ -26,26 +26,34 @@ public:
         return *this;
     }
 
-    void addCard(Card* Card){
+    void addCard(Card* Card) override{
         (*this).operator+=(Card);
     }
 
-    int sell();
-    vector<T*> getCardChain() const { return cardChain; } // Getter for private member
-    int getSize() const;                                  // Helper to access size of private member cardChain
-    void print(ostream& out) const;
+    int sell() override;
+    vector<T*> getCardChain() const; // Getter for private member
+    int getSize() const override;                                  // Helper to access size of private member cardChain
+    void print(ostream& out) const override;
 
-    string getChainType() {
-        if (cardChain.empty()) return "No type (Empty Chain)";
-        else return cardChain[0]->getName();
-    };
+    string getChainType() const override;
 
     template <class U>
     friend ostream& operator<<(ostream& out, const Chain<U>& c);
 };
 
+template<class T>
+std::string Chain<T>::getChainType() const{
+    if (cardChain.empty()) return "No type (Empty Chain)";
+    else return cardChain[0]->getName();
+}
+
+template<class T>
+vector<T*> Chain<T>::getCardChain() const{
+    return cardChain;
+}
+
 template <class T>
-int Chain<T>::getSize() const {
+int Chain<T>::getSize() const{
     return cardChain.size();
 }
 
@@ -53,11 +61,14 @@ template <class T>
 Chain<T>::Chain(istream& in, const CardFactory* factory) {
     string cardType;
     while (in >> cardType) {
+        if(cardType == "."){
+            break;
+        }
         Card* card = factory->createCard(cardType);
         if (dynamic_cast<T*>(card)) {
             cardChain.push_back(static_cast<T*>(card));
         } else {
-            // Stop reading when a card of different type is found
+            //Stop reading when a card of different type is found
             break;
         }
     }
@@ -72,6 +83,9 @@ int Chain<T>::sell() {
     int coins = 0;
 
     for (int i = 3; i >= 0; --i) {
+        if (tempCard.coinTable[i]==0){
+            continue;
+        }
         if (size >= tempCard.coinTable[i]) {
             coins = i + 1; 
             break;
@@ -81,7 +95,7 @@ int Chain<T>::sell() {
 }
 
 template <class T>
-void Chain<T>::print(ostream& out) const {
+void Chain<T>::print(ostream& out) const{
     if (cardChain.empty()) {
         out << "Empty";
     } else {
@@ -90,6 +104,7 @@ void Chain<T>::print(ostream& out) const {
             card->print(out);
             out << " ";
         }
+        out << ".";
     }
 }
 

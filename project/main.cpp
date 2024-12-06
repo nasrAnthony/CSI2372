@@ -67,50 +67,98 @@ void addCardToChain(Player& playerInstance, Table* tb, Card* card){
             }
         }
         if(emptyChainSlotFound == false){
-        cout << "You are full on chains! You must sell one if you wish to add the card.\n";
-        for (size_t i=0; i<playerInstance.getChains().size(); ++i){
-            if(playerInstance.getChains()[i]!=nullptr){
-                std::cout << "Chain #" << (i + 1) << ": ";
-                playerInstance.getChains()[i]->print(cout);
+            bool boughtThirdChain = false;
+            string playerChoice;
+            cout << "You are full on chains! Would you like to buy a third chain slot for 3 coins? (y/n) ";
+            cin >> playerChoice;
+            if(playerChoice == "Y" || playerChoice == "y"){
+                try{
+                    playerInstance.buyThirdChain();
+                    boughtThirdChain = true;
+                    cout << "Success! You bought a third chain slot\n";
+                    if(playerInstance.getChains()[2] == nullptr){
+                        //free slot found, lets create a new chain. 
+                        if (card->getName() == "Blue") {
+                            playerInstance.getChains()[2] = new Chain<Blue>();
+                        }
+                        else if (card->getName() == "Chili") {
+                            playerInstance.getChains()[2] = new Chain<Chili>();
+                        }
+                        else if (card->getName() == "Stink") {
+                            playerInstance.getChains()[2] = new Chain<Stink>();
+                        }
+                        else if (card->getName() == "Green") {
+                            playerInstance.getChains()[2] = new Chain<Green>();
+                        }
+                        else if (card->getName() == "soy") {
+                            playerInstance.getChains()[2] = new Chain<soy>();
+                        }
+                        else if (card->getName() == "black") {
+                            playerInstance.getChains()[2] = new Chain<black>();
+                        }
+                        else if (card->getName() == "Red") {
+                            playerInstance.getChains()[2] = new Chain<Red>();
+                        }
+                        else if (card->getName() == "garden") {
+                            playerInstance.getChains()[2] = new Chain<garden>();
+                        }
+                        playerInstance.getChains()[2]->addCard(card);
+                        cout << "A new " << card->getName() <<" chain was created.\n";
+                        
+                    }
+                }
+                catch(runtime_error& runtime_error) {
+                    cout << "Runtime error: " << runtime_error.what() << "\n";
+                    cout << "You will have to sell one of your chains.\n";
+                }
             }
-        }
-        int deadChainIndex;
-        do {
-            std::cout << "Enter the index of the chain to sell (1-" << playerInstance.getMaxNumChains() << "): ";
-            std::cin >> deadChainIndex;
-            deadChainIndex--; // Adjust for 0-based index
-        } while (deadChainIndex < 0 || deadChainIndex >= playerInstance.getMaxNumChains() || playerInstance.getChains()[deadChainIndex] == nullptr);
-        int money = playerInstance.getChains()[deadChainIndex]->sell();
-        playerInstance += money;
-        delete playerInstance.getChains()[deadChainIndex];
-        playerInstance.getChains()[deadChainIndex] = nullptr;
-        cout << "You sold chain " << (deadChainIndex) << " for " << money << " coins.\n";
-        if (card->getName() == "Blue") {
-            playerInstance.getChains()[deadChainIndex] = new Chain<Blue>();
-        }
-        else if (card->getName() == "Chili") {
-            playerInstance.getChains()[deadChainIndex] = new Chain<Chili>();
-        }
-        else if (card->getName() == "Stink") {
-            playerInstance.getChains()[deadChainIndex] = new Chain<Stink>();
-        }
-        else if (card->getName() == "Green") {
-            playerInstance.getChains()[deadChainIndex] = new Chain<Green>();
-        }
-        else if (card->getName() == "soy") {
-            playerInstance.getChains()[deadChainIndex] = new Chain<soy>();
-        }
-        else if (card->getName() == "black") {
-            playerInstance.getChains()[deadChainIndex] = new Chain<black>();
-        }
-        else if (card->getName() == "Red") {
-            playerInstance.getChains()[deadChainIndex] = new Chain<Red>();
-        }
-        else if (card->getName() == "garden") {
-            playerInstance.getChains()[deadChainIndex] = new Chain<garden>();
-        }
-        playerInstance.getChains()[deadChainIndex]->addCard(card);
-        cout << "A new " << card->getName() <<" chain was created.\n";
+
+            if(!boughtThirdChain){
+                for (size_t i=0; i<playerInstance.getChains().size(); ++i){
+                    if(playerInstance.getChains()[i]!=nullptr){
+                        std::cout << "Chain #" << (i + 1) << ": ";
+                        playerInstance.getChains()[i]->print(cout);
+                        cout << " ";
+                    }
+                }
+                int deadChainIndex;
+                do {
+                    std::cout << "Enter the index of the chain to sell (1-" << playerInstance.getMaxNumChains() << "): ";
+                    std::cin >> deadChainIndex;
+                    deadChainIndex--; // Adjust for 0-based index
+                } while (deadChainIndex < 0 || deadChainIndex >= playerInstance.getMaxNumChains() || playerInstance.getChains()[deadChainIndex] == nullptr);
+                int money = playerInstance.getChains()[deadChainIndex]->sell();
+                playerInstance += money;
+                delete playerInstance.getChains()[deadChainIndex];
+                playerInstance.getChains()[deadChainIndex] = nullptr;
+                cout << "You sold chain " << (deadChainIndex) << " for " << money << " coins.\n";
+                if (card->getName() == "Blue") {
+                    playerInstance.getChains()[deadChainIndex] = new Chain<Blue>();
+                }
+                else if (card->getName() == "Chili") {
+                    playerInstance.getChains()[deadChainIndex] = new Chain<Chili>();
+                }
+                else if (card->getName() == "Stink") {
+                    playerInstance.getChains()[deadChainIndex] = new Chain<Stink>();
+                }
+                else if (card->getName() == "Green") {
+                    playerInstance.getChains()[deadChainIndex] = new Chain<Green>();
+                }
+                else if (card->getName() == "soy") {
+                    playerInstance.getChains()[deadChainIndex] = new Chain<soy>();
+                }
+                else if (card->getName() == "black") {
+                    playerInstance.getChains()[deadChainIndex] = new Chain<black>();
+                }
+                else if (card->getName() == "Red") {
+                    playerInstance.getChains()[deadChainIndex] = new Chain<Red>();
+                }
+                else if (card->getName() == "garden") {
+                    playerInstance.getChains()[deadChainIndex] = new Chain<garden>();
+                }
+                playerInstance.getChains()[deadChainIndex]->addCard(card);
+                cout << "A new " << card->getName() <<" chain was created.\n";
+                }
         }
     }
 }
@@ -123,7 +171,6 @@ void saveGameToFile(Table& table){
         file.close();
     }
 }
-
 
 
 
@@ -140,12 +187,23 @@ int main(){
     if(userInput == 'Y' || userInput == 'y'){
         ifstream fileInStream("savegame.txt");
         bool successFlagFileOpen = fileInStream.is_open();
+        bool fileIsEmpty = false;
         if(successFlagFileOpen){
-            tbp = new Table(fileInStream, cf);
-            fileInStream.close();
-            cout << "Data read from file\n";
-        }else{
-            cout << "Enter the name fo the 1st player: ";
+            fileInStream.seekg(0, ios::end);
+            if(fileInStream.tellg() == 0){
+                cout << "The save file is empty. Please start a new game.\n" << endl;
+                fileInStream.close();
+                fileIsEmpty = true;
+            }
+            if(!fileIsEmpty){
+                fileInStream.seekg(0, ios::beg);
+                tbp = new Table(fileInStream, cf);
+                fileInStream.close();
+                cout << "Data read from file\n";
+            }
+        }
+        if(!successFlagFileOpen || fileIsEmpty){
+            cout << "Enter the name of the 1st player: ";
             cin >> p1Name;
             cout << "Enter the name of the 2nd player: ";
             cin >> p2Name;
@@ -153,7 +211,7 @@ int main(){
         }
 
     }else{
-        cout << "Enter the name fo the 1st player: ";
+        cout << "Enter the name of the 1st player: ";
         cin >> p1Name;
         cout << "Enter the name of the 2nd player: ";
         cin >> p2Name;
@@ -162,10 +220,10 @@ int main(){
 
     while(!gameDoneFlag){
         for(int turnIndex = 0; turnIndex <= 1; ++turnIndex){
-            Player& playingPlayer = (turnIndex==0) ? tbp->player1 : tbp->player2;
-            Player& stallPlayer = (turnIndex==0) ? tbp->player2 : tbp->player1;
-            cout<< "It's " <<  playingPlayer.getName() << "'s turn.\n";
-            cout<< *tbp << endl;
+            Player& playingPlayer = (turnIndex==0) ? *(tbp->player1) : *(tbp->player2);
+            Player& stallPlayer = (turnIndex==0) ? *(tbp->player2) : *(tbp->player1);
+            cout<< "\nIt's " <<  playingPlayer.getName() << "'s turn.\n";
+            cout<< "\n" << *tbp << endl;
             cout<< "Would you like to save the game? (y/n): ";
             cin >> userInput;
             if(userInput == 'Y' || userInput == 'y'){
@@ -184,7 +242,7 @@ int main(){
                 for (auto start = taCards.begin(); start != taCards.end();){
                     Card* card = *start;
                     //propose to player to add the card to one of their chain
-                    cout << "Would you like to add the card [" << (*card).getName() << "] to your chains? (y/n): ";
+                    cout << "Would you like to add the card of type [" << (*card).getName() << "] to your chains? (y/n): ";
                     cin >> userInput;
                     if(userInput == 'Y' || userInput == 'y'){
                         addCardToChain(playingPlayer, tbp, card);
@@ -236,7 +294,7 @@ int main(){
             cout << "Would you like to discard a card from your hand? (y/n): ";
             cin >> userInput;
             if(userInput == 'Y' || userInput == 'y'){
-                playingPlayer.printHand(cout, true);//show player hand
+                playingPlayer.getHand().print(cout);//show player hand
                 cout << "Select which card to discard (index from 0): ";
                 int userInputDesiredIndex;
                 cin >> userInputDesiredIndex;
@@ -244,7 +302,7 @@ int main(){
                 if(deadCard){
                     //throw to discard pile
                     tbp->discardPile += deadCard;
-                    cout << "You have discarded " << (*deadCard).getName() << ".\n";
+                    cout << "You have discarded a " << (*deadCard).getName() << " card.\n";
                 }
                 else{
                     cout << "You have selected an invalid index.\n";
